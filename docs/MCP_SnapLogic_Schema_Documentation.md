@@ -101,34 +101,7 @@ mcp__snaplogic-schema__search_snaps({
 ]
 ```
 
-### 2. Get Snap Schema
-
-Retrieve detailed schema for a specific snap:
-
-```javascript
-mcp__snaplogic-schema__get_snap_schema({
-  class_id: "com-snaplogic-snaps-transform-datatransform"
-})
-```
-
-**Example Response:**
-```json
-{
-  "class_id": "com-snaplogic-snaps-transform-datatransform",
-  "class_version": 2,
-  "description": "Transform data using expressions",
-  "property_map": {
-    "settings": {
-      "execution_mode": { "value": "Validate & Execute" }
-    },
-    "info": {
-      "label": { "value": "Mapper" }
-    }
-  }
-}
-```
-
-### 3. List Categories
+### 2. List Categories
 
 Get all available snap categories:
 
@@ -154,7 +127,7 @@ mcp__snaplogic-schema__list_categories()
 ]
 ```
 
-### 4. Validate Snap Configuration
+### 3. Validate Snap Configuration
 
 Validate a snap configuration against its schema:
 
@@ -206,12 +179,7 @@ const mappers = await mcp__snaplogic_schema__search_snaps({
   query: "mapper"
 });
 
-// 2. Get detailed schema
-const mapperSchema = await mcp__snaplogic_schema__get_snap_schema({
-  class_id: mappers[0].class_id
-});
-
-// 3. Validate your configuration
+// 2. Validate your configuration
 const validation = await mcp__snaplogic_schema__validate_snap_config({
   config: {
     class_id: mappers[0].class_id,

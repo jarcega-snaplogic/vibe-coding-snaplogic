@@ -12,14 +12,10 @@ export class SchemaCache {
     this.byCategory = new Map(); // category → Set of class_ids
     this.searchIndex = new Map(); // token → Set of class_ids
     
-    // Full schemas loaded on-demand with LRU eviction
-    this.fullSchemas = new Map(); // class_id → {schema, lastAccess}
-    this.schemaAccessOrder = []; // Track access order for LRU
     
     // Cache metadata
     this.catalogLastFetch = null;
     this.catalogTTL = 24 * 60 * 60 * 1000; // 24 hours
-    this.maxFullSchemas = 50; // Limit memory usage
     this.isLoading = false;
   }
 
@@ -177,45 +173,6 @@ export class SchemaCache {
     return results;
   }
 
-  /**
-   * Get or fetch full schema with LRU cache management
-   */
-  getFullSchema(classId) {
-    if (this.fullSchemas.has(classId)) {
-      // Update access time
-      const schema = this.fullSchemas.get(classId);
-      schema.lastAccess = Date.now();
-      
-      // Move to end of access order
-      const index = this.schemaAccessOrder.indexOf(classId);
-      if (index > -1) {
-        this.schemaAccessOrder.splice(index, 1);
-      }
-      this.schemaAccessOrder.push(classId);
-      
-      return schema.data;
-    }
-    
-    return null; // Caller should fetch from API
-  }
-
-  /**
-   * Store full schema with LRU eviction
-   */
-  storeFullSchema(classId, schemaData) {
-    // Evict oldest if at capacity
-    if (this.fullSchemas.size >= this.maxFullSchemas) {
-      const oldest = this.schemaAccessOrder.shift();
-      this.fullSchemas.delete(oldest);
-    }
-    
-    // Store new schema
-    this.fullSchemas.set(classId, {
-      data: schemaData,
-      lastAccess: Date.now()
-    });
-    this.schemaAccessOrder.push(classId);
-  }
 
   /**
    * Get all categories with counts
@@ -245,8 +202,6 @@ export class SchemaCache {
     this.catalog.clear();
     this.byCategory.clear();
     this.searchIndex.clear();
-    this.fullSchemas.clear();
-    this.schemaAccessOrder = [];
     this.catalogLastFetch = null;
   }
 }

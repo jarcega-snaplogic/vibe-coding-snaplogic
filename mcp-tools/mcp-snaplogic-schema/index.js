@@ -115,35 +115,6 @@ class SnapLogicSchemaServer {
     }
   }
 
-  /**
-   * Fetch individual snap schema
-   */
-  async fetchSnapSchema(classId) {
-    // This would require additional API endpoints
-    // For now, return basic schema structure from catalog
-    const snapInfo = this.cache.getSnapInfo(classId);
-    if (!snapInfo) {
-      throw new Error(`Snap not found: ${classId}`);
-    }
-
-    // Construct basic schema from catalog info
-    // In a real implementation, this would fetch from a specific API endpoint
-    const schema = {
-      class_id: classId,
-      class_version: snapInfo.version,
-      description: snapInfo.description,
-      property_map: {
-        settings: {
-          execution_mode: { value: 'Validate & Execute' }
-        },
-        info: {
-          label: { value: snapInfo.name }
-        }
-      }
-    };
-
-    return schema;
-  }
 
   /**
    * Setup MCP tool handlers
@@ -167,20 +138,6 @@ class SnapLogicSchemaServer {
               },
             },
             required: ['query'],
-          },
-        },
-        {
-          name: 'get_snap_schema',
-          description: 'Get detailed schema for a specific snap',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              class_id: {
-                type: 'string',
-                description: 'The class ID of the snap (e.g., com-snaplogic-snaps-transform-datatransform)',
-              },
-            },
-            required: ['class_id'],
           },
         },
         {
@@ -236,31 +193,6 @@ class SnapLogicSchemaServer {
             };
           }
 
-          case 'get_snap_schema': {
-            const classId = args?.class_id;
-            
-            if (!classId) {
-              throw new Error('class_id is required');
-            }
-
-            // Check cache first
-            let schema = this.cache.getFullSchema(classId);
-            
-            if (!schema) {
-              // Fetch from API
-              schema = await this.fetchSnapSchema(classId);
-              this.cache.storeFullSchema(classId, schema);
-            }
-
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify(schema, null, 2),
-                },
-              ],
-            };
-          }
 
           case 'list_categories': {
             const categories = this.cache.getCategories();
