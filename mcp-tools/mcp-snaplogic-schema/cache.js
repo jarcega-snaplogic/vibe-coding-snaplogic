@@ -115,38 +115,66 @@ export class SchemaCache {
   }
 
   /**
-   * Search snaps by query
+   * Search snaps by query using contains-based matching
    */
   searchSnaps(query, category = null) {
-    const queryTokens = this.tokenize(query.toLowerCase());
+    const searchQuery = query.toLowerCase().trim();
+    
+    // Return empty results for very short queries
+    if (searchQuery.length < 2) {
+      return [];
+    }
+    
     const matches = new Map(); // class_id → score
     
-    // Score based on token matches
-    for (const token of queryTokens) {
-      if (this.searchIndex.has(token)) {
-        for (const classId of this.searchIndex.get(token)) {
-          const score = matches.get(classId) || 0;
-          matches.set(classId, score + 1);
+    // Search through all catalog entries
+    for (const [classId, snapInfo] of this.catalog) {
+      // Skip if category filter doesn't match
+      if (category && snapInfo.category !== category.toLowerCase()) continue;
+      
+      // Create searchable text from all available fields
+      const searchableText = `${classId} ${snapInfo.name} ${snapInfo.description}`.toLowerCase();
+      
+      // Check if searchable text contains the query
+      if (searchableText.includes(searchQuery)) {
+        let score = 1; // Base score for contains match
+        
+        // Split into words for better matching analysis
+        const words = searchableText.split(/[\s\-_\.]+/).filter(w => w.length > 0);
+        
+        // Higher score for exact word match
+        if (words.includes(searchQuery)) {
+          score = 5;
         }
+        // Higher score for word that starts with query
+        else if (words.some(word => word.startsWith(searchQuery))) {
+          score = 3;
+        }
+        // Bonus if query appears in class_id (more relevant)
+        if (classId.toLowerCase().includes(searchQuery)) {
+          score += 1;
+        }
+        // Bonus if query appears in display name
+        if (snapInfo.name.toLowerCase().includes(searchQuery)) {
+          score += 1;
+        }
+        
+        matches.set(classId, score);
       }
     }
     
-    // Filter by category if specified
-    let results = Array.from(matches.entries());
-    if (category) {
-      const categorySnaps = this.byCategory.get(category.toLowerCase());
-      if (categorySnaps) {
-        results = results.filter(([classId]) => categorySnaps.has(classId));
-      }
-    }
-    
-    // Sort by score and return snap info
-    return results
-      .sort((a, b) => b[1] - a[1])
+    // Sort by score (descending) then alphabetically by class_id
+    const results = Array.from(matches.entries())
+      .sort((a, b) => {
+        const scoreDiff = b[1] - a[1];
+        return scoreDiff !== 0 ? scoreDiff : a[0].localeCompare(b[0]);
+      })
       .map(([classId]) => ({
         class_id: classId,
         ...this.catalog.get(classId)
       }));
+    
+    return results;
   }
 
   /**
