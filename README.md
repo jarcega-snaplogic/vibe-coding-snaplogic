@@ -39,7 +39,7 @@ The system consists of integrated components that work together to provide a com
 
 ```
 vibe-coding-snaplogic/
-├── custom-agents/      # Claude Code custom agents for specialized tasks
+├── custom-agents/      # Claude Code custom agents (copy to ~/.claude/agents/)
 ├── mcp-tools/          # MCP server for SnapLogic schema access
 ├── rules/              # Modular knowledge base and development rules
 ├── validation/         # Git hooks and comprehensive validation tools
@@ -55,8 +55,8 @@ This system includes two specialized Claude Code agents that automatically handl
 ### Setup Instructions
 1. **Copy agents to Claude Code directory**:
    ```bash
-   mkdir -p ../.claude/agents/
-   cp custom-agents/* ../.claude/agents/
+   mkdir -p ~/.claude/agents/
+   cp custom-agents/* ~/.claude/agents/
    ```
 
 2. **Verify agent installation**:
@@ -279,8 +279,8 @@ cd vibe-coding-snaplogic
 ### 2. Install Custom Agents
 ```bash
 # Copy agents to Claude Code directory
-mkdir -p ../.claude/agents/
-cp custom-agents/* ../.claude/agents/
+mkdir -p ~/.claude/agents/
+cp custom-agents/* ~/.claude/agents/
 
 # Verify in Claude Code
 # Run: /agents
