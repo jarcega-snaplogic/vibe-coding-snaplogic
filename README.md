@@ -327,71 +327,21 @@ git commit -m "Add new pipeline"  # Validation runs automatically
 
 ## 🛠️ Development Workflow
 
-The system follows a sophisticated agent-driven development workflow:
+**Simple agent-driven process:**
 
-### 1. Planning Phase
-- Define use case and select appropriate pipeline pattern
-- Claude Code automatically selects appropriate custom agent
-- Agent loads relevant rule files contextually
-
-### 2. Implementation Phase  
-- **Pipeline Creation**: `snaplogic-pipeline-developer` agent builds production-grade pipelines
-- **Field Transformations**: Agent configures business logic and mappings
-- **MCP Integration**: Real-time schema access ensures accuracy
-- **Validation**: Automatic compliance with all development rules
-
-### 3. Quality Assurance Phase
-- **Git Hooks**: Automatic validation on commit (<100ms)
-- **Comprehensive Analysis**: Detailed validation with verbose output
-- **Troubleshooting**: `snaplogic-validation-troubleshooter` for any issues
-- **Testing**: Verify with sample data and Designer import
-
-### 4. Production Phase
-- **Documentation**: Auto-generated with descriptive commit messages
-- **Pattern Compliance**: Following validated examples and best practices
-- **Knowledge Scaling**: Modular rules enable focused expertise
-- **Zero Invalid Commits**: Proactive validation prevents runtime issues
-
-## 🔧 System Status
-
-### ✅ Production Ready Components
-- **Validation Infrastructure**: Git hooks + comprehensive analysis tools
-- **Pipeline Examples**: 2-snap, 3-snap, Group By N patterns with full documentation
-- **MCP Tools**: Real-time SnapLogic schema access with intelligent caching
-- **Rules System**: Modular knowledge base with context-sensitive loading
-- **Custom Agents**: Specialized AI assistants for complex SnapLogic tasks
-
-### 🎯 Performance Metrics
-- **Validation Speed**: <100ms for typical pipelines
-- **Error Detection**: 100% JSON syntax, 95% structural issues
-- **Agent Coverage**: Automatic handling of 90% common SnapLogic development tasks
-- **Schema Accuracy**: Real-time access to current SnapLogic snap catalogs
+1. **Create**: "Create a CSV processing pipeline" → `snaplogic-pipeline-developer` agent handles it
+2. **Debug**: "My pipeline has validation errors" → `snaplogic-validation-troubleshooter` agent fixes it  
+3. **Validate**: Git hooks automatically check on commit
+4. **Deploy**: Production-ready pipelines following all standards
 
 ## 🔧 Installation Requirements
 
-### System Dependencies
 - **Python 3**: For JSON validation (`python3 -m json.tool`)
-- **AWK**: For fast structure validation (typically pre-installed)
-- **Bash**: For hook scripts and automation
+- **AWK**: For structure validation (typically pre-installed)
+- **Bash**: For hook scripts
 - **Git**: For hook integration
-
-### Optional Dependencies
-- **jq**: For JSON output formatting and querying
-- **SnapLogic Designer**: For visual pipeline testing
-
-## 📊 Performance Benchmarks
-
-### Git Hook Performance
-- **2-snap pipeline**: ~25ms validation time
-- **3-snap pipeline**: ~35ms validation time  
-- **Complex pipeline**: ~75ms validation time
-- **Target**: <100ms for all pipelines
-
-### Validation Coverage
-- ✅ JSON syntax errors: 100% detection
-- ✅ Structure errors: 95% detection  
-- ✅ Configuration errors: 90% detection
-- ✅ Best practice violations: 85% detection
+- **Node.js**: For MCP tools (optional)
+- **SnapLogic Designer**: For testing (optional)
 
 ## 🤝 Contributing
 
@@ -490,49 +440,11 @@ Please include:
 - **Expected vs actual behavior**: Clear description of the issue
 - **Pipeline files**: Sanitized .slp files if relevant to the issue
 
-## 🤝 Contributing
+## 🆘 Getting Help
 
-### Adding New Pipeline Examples
-1. Follow existing UUID patterns (`11111111-1111-1111-1111-00000000000X`)
-2. Include comprehensive documentation and use cases
-3. Validate with all available tools before submission
-4. Update README with pattern description and configuration details
+- **Validation errors**: Check output for specific fixes needed
+- **Agent issues**: Verify agents are in `~/.claude/agents/` 
+- **MCP problems**: Test server connection in `mcp-tools/`
+- **Examples**: See `examples/` directory for working patterns
 
-### Improving Custom Agents
-1. Add new capabilities to existing agents or create specialized agents
-2. Follow MCP agent frontmatter structure
-3. Include comprehensive examples and triggers
-4. Test agent integration with Claude Code
-
-### Enhancing MCP Tools
-1. Follow MCP protocol specifications for new tools
-2. Integrate with existing caching and error handling infrastructure
-3. Provide comprehensive input validation and error messages
-4. Include thorough testing and documentation
-
-### Expanding Rules System
-1. Add new rule files for specialized development scenarios
-2. Maintain consistency with existing rule structure and formatting
-3. Include practical examples and common use cases
-4. Test rule integration with custom agents
-
-## 📜 License
-
-This project is designed for internal SnapLogic development workflow improvement. Please ensure compliance with your organization's policies when using these tools.
-
----
-
-## 🌟 System Highlights
-
-**🎯 Production-Grade Architecture**: Enterprise-ready validation, caching, and error handling  
-**🤖 AI-Powered Development**: Custom Claude Code agents handle complex SnapLogic tasks  
-**⚡ High Performance**: Sub-100ms validation, intelligent caching, optimized workflows  
-**📚 Comprehensive Knowledge**: Modular rules system with context-sensitive loading  
-**🔌 Real-Time Integration**: Live SnapLogic schema access through MCP tools  
-**🛡️ Zero Invalid Commits**: Proactive validation prevents runtime issues  
-
----
-
-**🎉 Welcome to the Future of SnapLogic Development!**
-
-*Where AI agents, validation, and production patterns combine to create the ultimate SnapLogic development experience.*
+For detailed troubleshooting, see sections above on specific component issues.
