@@ -12,7 +12,6 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import fetch from 'node-fetch';
-import { readFileSync, existsSync } from 'fs';
 import { SchemaCache } from './cache.js';
 
 class SnapLogicSchemaServer {
@@ -36,28 +35,30 @@ class SnapLogicSchemaServer {
   }
 
   /**
-   * Load configuration from .snaplogic-config.json
+   * Load configuration from environment variables
    */
   loadConfig() {
-    const configPath = '/home/jocel/llmapps/snaplogic_cicd_emea_cfi/.snaplogic-config.json';
-    if (existsSync(configPath)) {
-      try {
-        const config = JSON.parse(readFileSync(configPath, 'utf8'));
-        return config;
-      } catch (error) {
-        // Silent fallback to default config
+    const required = [
+      'SNAPLOGIC_USERNAME',
+      'SNAPLOGIC_PASSWORD', 
+      'SNAPLOGIC_SCHEMA_BASE_URL',
+      'SNAPLOGIC_SCHEMA_ORG'
+    ];
+    
+    for (const envVar of required) {
+      if (!process.env[envVar]) {
+        throw new Error(`Missing required environment variable: ${envVar}. Please export all SnapLogic environment variables before starting Claude Code.`);
       }
     }
     
-    // Fallback configuration
     return {
       credentials: {
-        username: process.env.SNAPLOGIC_USERNAME || '',
-        password: process.env.SNAPLOGIC_PASSWORD || ''
+        username: process.env.SNAPLOGIC_USERNAME,
+        password: process.env.SNAPLOGIC_PASSWORD
       },
-      api: {
-        base_url: 'https://emea.snaplogic.com',
-        org: 'ConnectFasterInc'
+      schema_api: {
+        base_url: process.env.SNAPLOGIC_SCHEMA_BASE_URL,
+        org: process.env.SNAPLOGIC_SCHEMA_ORG
       }
     };
   }
@@ -77,7 +78,7 @@ class SnapLogicSchemaServer {
     this.cache.isLoading = true;
     
     try {
-      const url = `${this.config.api.base_url}/api/1/rest/admin/snappack/catalog/snaps?org_path=/${this.config.api.org}&level=detail`;
+      const url = `${this.config.schema_api.base_url}/api/1/rest/admin/snappack/catalog/snaps?org_path=/${this.config.schema_api.org}&level=detail`;
       
       const auth = Buffer.from(
         `${this.config.credentials.username}:${this.config.credentials.password}`
