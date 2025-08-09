@@ -59,7 +59,7 @@ This system includes two specialized Claude Code agents that automatically handl
    cp custom-agents/* ~/.claude/agents/
    ```
 
-2. **Configure environment variables** (see Environment Setup section below)
+2. **Configure environment variables** (run `./setup-environment.sh`)
 
 3. **Verify agent installation**:
    ```bash
@@ -143,7 +143,7 @@ cd ../..
 # Quick setup using provided script
 ./setup-environment.sh
 
-# Or manually configure (see Environment Setup section below)
+# Or customize the setup-environment.sh script for your specific configuration
 ```
 
 #### **3. Add to Claude Code MCP Configuration**
@@ -202,111 +202,6 @@ mcp__snaplogic-schema__validate_snap_config({
 - **Error Handling**: Production-ready error handling and fallbacks
 - **Integration Ready**: Designed for seamless Claude Code agent integration
 
-## 🌍 Environment Setup
-
-### **Quick Setup (Recommended)**
-
-Use the provided setup script for automatic configuration:
-
-```bash
-# Automatic setup - detects your shell and configures everything
-./setup-environment.sh
-```
-
-This script:
-- ✅ **Auto-detects your shell** (bash/zsh/other)
-- ✅ **Adds all required environment variables** to your profile
-- ✅ **Provides verification commands** to confirm setup
-- ✅ **Includes helpful next steps** and customization guidance
-- ✅ **Prevents duplicate configuration** if already setup
-
-### **Manual Setup (Advanced)**
-
-If you prefer manual configuration or need custom values:
-
-#### Required Environment Variables
-
-```bash
-# Authentication (Required)
-export SNAPLOGIC_USERNAME="your_username@domain.com"
-export SNAPLOGIC_PASSWORD="your_password"
-
-# Schema API Configuration (Required for MCP schema tools)
-export SNAPLOGIC_SCHEMA_BASE_URL="https://emea.snaplogic.com"  # or https://elastic.snaplogic.com
-export SNAPLOGIC_SCHEMA_ORG="YourOrgName"
-
-# Project API Configuration (Required for MCP git tools and CI/CD)
-export SNAPLOGIC_PROJECT_BASE_URL="https://emea.snaplogic.com"  # or https://elastic.snaplogic.com
-export SNAPLOGIC_PROJECT_ORG="YourOrgName" 
-export SNAPLOGIC_PROJECT_SPACE="your_project_space"
-export SNAPLOGIC_PROJECT_ID="your_project_id"
-
-# Optional: Auto-computed project path
-export SNAPLOGIC_PROJECT_PATH="snapLogic4snapLogic/${SNAPLOGIC_PROJECT_SPACE}"
-```
-
-#### Manual Setup Steps
-
-1. **Add to Shell Profile**
-   ```bash
-   # Determine your shell profile
-   echo $SHELL  # Check if bash or zsh
-   
-   # Add variables to appropriate profile
-   # For bash: ~/.bashrc
-   # For zsh: ~/.zshrc
-   # For other: ~/.profile
-   ```
-
-2. **Reload Environment**
-   ```bash
-   source ~/.bashrc  # or ~/.zshrc, or restart terminal
-   ```
-
-3. **Restart Claude Code**
-   Environment variables are loaded when Claude Code starts.
-
-4. **Verify Configuration**
-   ```bash
-   echo "Username: $SNAPLOGIC_USERNAME"
-   echo "Schema URL: $SNAPLOGIC_SCHEMA_BASE_URL" 
-   echo "Project Space: $SNAPLOGIC_PROJECT_SPACE"
-   ```
-
-### Finding Your SnapLogic Configuration
-
-#### **Organization Name**: 
-- Log into SnapLogic Designer
-- Check the URL: `https://[region].snaplogic.com/sl/designer.html#[org]/[project]`
-- The `[org]` part is your organization name
-
-#### **Project Space & ID**:
-- In Designer, navigate to your project
-- Check URL for project space name
-- Project ID can be found in project settings or API calls
-
-#### **Region Selection**:
-- **EMEA**: `https://emea.snaplogic.com`
-- **US (Elastic)**: `https://elastic.snaplogic.com`
-- **US (Neon)**: `https://neon.snaplogic.com`
-
-### Converting from Config Files
-
-If you have existing `.snaplogic-config.json` files, you can extract values:
-
-```bash
-# Extract from config file
-export SNAPLOGIC_USERNAME="$(jq -r '.credentials.username' .snaplogic-config.json)"
-export SNAPLOGIC_PASSWORD="$(jq -r '.credentials.password' .snaplogic-config.json)"
-export SNAPLOGIC_PROJECT_SPACE="$(jq -r '.api.project_space // .project_api.project_space' .snaplogic-config.json)"
-```
-
-### Security Best Practices
-
-- **Never commit credentials**: Environment variables keep credentials out of repositories
-- **Use different passwords**: Consider using API-specific passwords
-- **Rotate credentials**: Regularly update passwords and API keys
-- **Limit permissions**: Use SnapLogic accounts with minimal required permissions
 
 ## 📚 Rules & Knowledge System
 
