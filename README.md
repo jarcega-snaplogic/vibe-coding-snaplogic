@@ -59,7 +59,9 @@ This system includes two specialized Claude Code agents that automatically handl
    cp custom-agents/* ~/.claude/agents/
    ```
 
-2. **Verify agent installation**:
+2. **Configure environment variables** (see Environment Setup section below)
+
+3. **Verify agent installation**:
    ```bash
    # In Claude Code, run:
    /agents
@@ -77,6 +79,8 @@ This system includes two specialized Claude Code agents that automatically handl
 - Configures field transformations and business logic
 - Ensures Designer-friendly formatting and validation compliance
 - Integrates with MCP tools for real-time schema access
+- **Executes complete CI/CD workflow**: Automatically deploys validated pipelines from development to SnapLogic production
+- **Manages deployment lifecycle**: Handles git commits, GitHub pushes, and SnapLogic synchronization seamlessly
 
 #### `snaplogic-validation-troubleshooter`  
 **Automatically triggered for**: Validation errors, JSON syntax issues, UUID conflicts, Designer problems
@@ -106,28 +110,29 @@ The system includes a production-ready MCP server that provides real-time access
    npm install
    ```
 
-2. **Configure SnapLogic credentials**:
-   ```bash
-   # Create configuration file in project root
-   cp mcp-tools/mcp-snaplogic-schema/.snaplogic-config.example.json ../.snaplogic-config.json
-   # Edit with your SnapLogic credentials
-   ```
+2. **Configure environment variables** (see Environment Setup section below)
 
-3. **Add to Claude Code MCP configuration**:
+3. **Add to Claude Code MCP configuration** (`~/.claude/claude_desktop_config.json`):
    ```json
    {
      "mcpServers": {
        "snaplogic-schema": {
          "command": "node",
-         "args": ["./vibe-coding-snaplogic/mcp-tools/mcp-snaplogic-schema/index.js"],
-         "env": {
-           "SNAPLOGIC_USERNAME": "your_username",
-           "SNAPLOGIC_PASSWORD": "your_password"
-         }
+         "args": ["./vibe-coding-snaplogic/mcp-tools/mcp-snaplogic-schema/index.js"]
+       },
+       "snaplogic-git": {
+         "command": "node", 
+         "args": ["./vibe-coding-snaplogic/mcp-tools/mcp-snaplogic-git/index.js"]
        }
      }
    }
    ```
+
+#### `mcp__snaplogic-git__git_status`
+Check synchronization status between GitHub and SnapLogic, showing which pipelines are out of sync.
+
+#### `mcp__snaplogic-git__git_pull`
+Pull latest changes from GitHub to SnapLogic, enabling automated CI/CD deployment.
 
 ### Available MCP Tools
 
@@ -163,6 +168,98 @@ mcp__snaplogic-schema__validate_snap_config({
 - **Real-time Access**: Direct connection to SnapLogic API for current schemas
 - **Error Handling**: Production-ready error handling and fallbacks
 - **Integration Ready**: Designed for seamless Claude Code agent integration
+
+## 🌍 Environment Setup
+
+### Required Environment Variables
+
+The system uses environment variables for secure, portable configuration. Set these in your shell profile (`~/.bashrc`, `~/.zshrc`, etc.):
+
+```bash
+# Authentication (Required)
+export SNAPLOGIC_USERNAME="your_username@domain.com"
+export SNAPLOGIC_PASSWORD="your_password"
+
+# Schema API Configuration (Required for MCP schema tools)
+export SNAPLOGIC_SCHEMA_BASE_URL="https://emea.snaplogic.com"  # or https://elastic.snaplogic.com
+export SNAPLOGIC_SCHEMA_ORG="YourOrgName"
+
+# Project API Configuration (Required for MCP git tools and CI/CD)
+export SNAPLOGIC_PROJECT_BASE_URL="https://emea.snaplogic.com"  # or https://elastic.snaplogic.com
+export SNAPLOGIC_PROJECT_ORG="YourOrgName" 
+export SNAPLOGIC_PROJECT_SPACE="your_project_space"
+export SNAPLOGIC_PROJECT_ID="your_project_id"
+
+# Optional: Auto-computed project path
+export SNAPLOGIC_PROJECT_PATH="snapLogic4snapLogic/${SNAPLOGIC_PROJECT_SPACE}"
+```
+
+### Setup Instructions
+
+#### 1. **Add to Shell Profile**
+```bash
+# Add environment variables to your shell profile
+echo "# SnapLogic Configuration" >> ~/.bashrc
+echo "export SNAPLOGIC_USERNAME=\"your_username@domain.com\"" >> ~/.bashrc  
+echo "export SNAPLOGIC_PASSWORD=\"your_password\"" >> ~/.bashrc
+echo "export SNAPLOGIC_SCHEMA_BASE_URL=\"https://emea.snaplogic.com\"" >> ~/.bashrc
+echo "export SNAPLOGIC_SCHEMA_ORG=\"YourOrgName\"" >> ~/.bashrc
+echo "export SNAPLOGIC_PROJECT_BASE_URL=\"https://emea.snaplogic.com\"" >> ~/.bashrc
+echo "export SNAPLOGIC_PROJECT_ORG=\"YourOrgName\"" >> ~/.bashrc
+echo "export SNAPLOGIC_PROJECT_SPACE=\"your_project_space\"" >> ~/.bashrc
+echo "export SNAPLOGIC_PROJECT_ID=\"your_project_id\"" >> ~/.bashrc
+echo "export SNAPLOGIC_PROJECT_PATH=\"snapLogic4snapLogic/\${SNAPLOGIC_PROJECT_SPACE}\"" >> ~/.bashrc
+```
+
+#### 2. **Reload Environment**
+```bash
+source ~/.bashrc  # or restart your terminal
+```
+
+#### 3. **Restart Claude Code**
+Environment variables are loaded when Claude Code starts, so restart it after setting variables.
+
+#### 4. **Verify Configuration**
+```bash
+echo "Username: $SNAPLOGIC_USERNAME"
+echo "Schema URL: $SNAPLOGIC_SCHEMA_BASE_URL" 
+echo "Project Space: $SNAPLOGIC_PROJECT_SPACE"
+```
+
+### Finding Your SnapLogic Configuration
+
+#### **Organization Name**: 
+- Log into SnapLogic Designer
+- Check the URL: `https://[region].snaplogic.com/sl/designer.html#[org]/[project]`
+- The `[org]` part is your organization name
+
+#### **Project Space & ID**:
+- In Designer, navigate to your project
+- Check URL for project space name
+- Project ID can be found in project settings or API calls
+
+#### **Region Selection**:
+- **EMEA**: `https://emea.snaplogic.com`
+- **US (Elastic)**: `https://elastic.snaplogic.com`
+- **US (Neon)**: `https://neon.snaplogic.com`
+
+### Converting from Config Files
+
+If you have existing `.snaplogic-config.json` files, you can extract values:
+
+```bash
+# Extract from config file
+export SNAPLOGIC_USERNAME="$(jq -r '.credentials.username' .snaplogic-config.json)"
+export SNAPLOGIC_PASSWORD="$(jq -r '.credentials.password' .snaplogic-config.json)"
+export SNAPLOGIC_PROJECT_SPACE="$(jq -r '.api.project_space // .project_api.project_space' .snaplogic-config.json)"
+```
+
+### Security Best Practices
+
+- **Never commit credentials**: Environment variables keep credentials out of repositories
+- **Use different passwords**: Consider using API-specific passwords
+- **Rotate credentials**: Regularly update passwords and API keys
+- **Limit permissions**: Use SnapLogic accounts with minimal required permissions
 
 ## 📚 Rules & Knowledge System
 
@@ -286,24 +383,34 @@ cp custom-agents/* ~/.claude/agents/
 # Run: /agents
 ```
 
-### 3. Setup MCP Tools (Optional)
+### 3. Setup Environment Variables
+```bash
+# Add your SnapLogic credentials to shell profile
+echo "export SNAPLOGIC_USERNAME=\"your_username@domain.com\"" >> ~/.bashrc
+echo "export SNAPLOGIC_PASSWORD=\"your_password\"" >> ~/.bashrc  
+echo "export SNAPLOGIC_SCHEMA_BASE_URL=\"https://emea.snaplogic.com\"" >> ~/.bashrc
+echo "export SNAPLOGIC_SCHEMA_ORG=\"YourOrgName\"" >> ~/.bashrc
+echo "export SNAPLOGIC_PROJECT_SPACE=\"your_project_space\"" >> ~/.bashrc
+source ~/.bashrc
+```
+
+### 4. Setup MCP Tools (Optional)
 ```bash
 # Install MCP server dependencies
 cd mcp-tools/mcp-snaplogic-schema/
 npm install
+cd ../mcp-snaplogic-git/
+npm install
 cd ../..
-
-# Configure credentials (create from example)
-# Edit ../.snaplogic-config.json with your SnapLogic credentials
 ```
 
-### 4. Install Validation Hooks
+### 5. Install Validation Hooks
 ```bash
 # Install git pre-commit validation
 ./validation/install-hooks.sh
 ```
 
-### 5. Start Developing
+### 6. Start Developing
 ```bash
 # Copy and customize a template
 cp examples/2-snap-pipeline.slp MyNewPipeline.slp
@@ -316,23 +423,30 @@ git add MyNewPipeline.slp
 git commit -m "Add new pipeline"  # Validation runs automatically
 ```
 
-### 6. Leverage AI Assistance
+### 7. Leverage AI Assistance with CI/CD
 ```bash
-# In Claude Code, create pipelines naturally:
+# In Claude Code, create pipelines with full deployment automation:
 # "Create a CSV processing pipeline that transforms customer data"
-# → snaplogic-pipeline-developer agent automatically handles the task
+# → snaplogic-pipeline-developer agent:
+#   1. Creates the pipeline with proper validation
+#   2. Commits to git with descriptive message
+#   3. Pushes to GitHub repository  
+#   4. Automatically syncs to SnapLogic via CI/CD tools
+#   5. Verifies deployment success
+
 # "My pipeline has validation errors"  
-# → snaplogic-validation-troubleshooter agent automatically debugs
+# → snaplogic-validation-troubleshooter agent automatically debugs and fixes
 ```
 
 ## 🛠️ Development Workflow
 
-**Simple agent-driven process:**
+**Simple agent-driven CI/CD process:**
 
-1. **Create**: "Create a CSV processing pipeline" → `snaplogic-pipeline-developer` agent handles it
+1. **Create**: "Create a CSV processing pipeline" → `snaplogic-pipeline-developer` agent handles complete development-to-production workflow
 2. **Debug**: "My pipeline has validation errors" → `snaplogic-validation-troubleshooter` agent fixes it  
 3. **Validate**: Git hooks automatically check on commit
-4. **Deploy**: Production-ready pipelines following all standards
+4. **Deploy**: Automated GitHub push and SnapLogic synchronization 
+5. **Verify**: Automatic deployment confirmation via CI/CD tools
 
 ## 🔧 Installation Requirements
 
