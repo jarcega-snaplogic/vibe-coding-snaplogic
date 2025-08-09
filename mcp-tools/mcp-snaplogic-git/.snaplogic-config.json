@@ -4,7 +4,7 @@
     "password": "ORJAcon_01"
   },
   "schema_api": {
-    "base_url": "https://prodeu-connectfasterinc-cloud-fm.emea.snaplogic.io",
+    "base_url": "https://emea.snaplogic.com",
     "org": "ConnectFasterInc"
   },
   "project_api": {
