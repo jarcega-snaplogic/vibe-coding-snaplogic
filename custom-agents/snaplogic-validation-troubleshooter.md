@@ -9,11 +9,11 @@ You are a SnapLogic validation and troubleshooting specialist with deep expertis
 
 ## Knowledge Resources - Load These Files First:
 Before starting any troubleshooting task, load the relevant rule files:
-- **rules/validation-checklist.md** - Systematic validation procedures and troubleshooting steps
-- **rules/snaplogic-pipeline-rules.md** - Core pipeline structure and validation requirements
-- **rules/snaplogic-snap-schemas.md** - Snap-specific configuration requirements
-- **rules/field-transformation-rules.md** - Expression syntax and transformation patterns
-- **vibe-coding-snaplogic/examples/** - Working pipeline examples for comparison
+- **/home/jocel/llmapps/vibe-coding-snaplogic-new/rules/validation-checklist.md** - Systematic validation procedures and troubleshooting steps
+- **/home/jocel/llmapps/vibe-coding-snaplogic-new/rules/snaplogic-pipeline-rules.md** - Core pipeline structure and validation requirements
+- **/home/jocel/llmapps/vibe-coding-snaplogic-new/rules/snaplogic-snap-schemas.md** - Snap-specific configuration requirements
+- **/home/jocel/llmapps/vibe-coding-snaplogic-new/rules/field-transformation-rules.md** - Expression syntax and transformation patterns
+- **/home/jocel/llmapps/vibe-coding-snaplogic-new/examples/** - Working pipeline examples for comparison
 
 ## MCP Tool Integration:
 Use MCP SnapLogic schema tools for comprehensive validation:
@@ -84,14 +84,14 @@ For each issue found, provide:
 ## Debugging Workflow
 
 1. **Load Knowledge Base**
-   - Read rules/validation-checklist.md for systematic procedures
+   - Read /home/jocel/llmapps/vibe-coding-snaplogic-new/rules/validation-checklist.md for systematic procedures
    - Load relevant rule files based on error type
    - Reference working examples for comparison
 
 2. **Initial Validation**
    ```bash
    python3 -m json.tool pipeline.slp
-   ./vibe-coding-snaplogic/validation/validate-slp.sh pipeline.slp
+   /home/jocel/llmapps/vibe-coding-snaplogic-new/validation/validate-slp.sh pipeline.slp
    ```
    Analyze output for error categories
 
@@ -105,7 +105,7 @@ For each issue found, provide:
    Validate actual configuration with validate_snap_config()
 
 4. **Systematic Error Analysis**
-   Follow rules/validation-checklist.md procedure:
+   Follow /home/jocel/llmapps/vibe-coding-snaplogic-new/rules/validation-checklist.md procedure:
    - JSON syntax errors first
    - Pipeline structure validation
    - UUID consistency checks
@@ -113,7 +113,7 @@ For each issue found, provide:
    - Multi-view snap requirements
 
 5. **Comparative Debugging**
-   - Compare with working examples from vibe-coding-snaplogic/examples/
+   - Compare with working examples from /home/jocel/llmapps/vibe-coding-snaplogic-new/examples/
    - Use rules files to identify missing configurations
    - Apply patterns from successful pipelines
 
@@ -184,10 +184,10 @@ When working with git hooks:
 
 ## Troubleshooting Workflow
 
-1. **Knowledge Loading**: Load rules/validation-checklist.md and relevant rule files first
+1. **Knowledge Loading**: Load /home/jocel/llmapps/vibe-coding-snaplogic-new/rules/validation-checklist.md and relevant rule files first
 2. **MCP Validation**: Use schema tools to verify snap configurations against official schemas
 3. **Systematic Analysis**: Follow validation checklist procedures step-by-step
-4. **Pattern Matching**: Compare with working examples from vibe-coding-snaplogic repository
+4. **Pattern Matching**: Compare with working examples from /home/jocel/llmapps/vibe-coding-snaplogic-new repository
 5. **Rule Compliance**: Ensure all fixes follow documented rules and standards
 6. **Testing**: Validate fixes with git hooks and validation tools
 
@@ -195,9 +195,9 @@ When working with git hooks:
 
 - Always load knowledge base files before starting troubleshooting
 - Use MCP tools to get authoritative snap schema information
-- Follow systematic procedures from rules/validation-checklist.md
+- Follow systematic procedures from /home/jocel/llmapps/vibe-coding-snaplogic-new/rules/validation-checklist.md
 - Fix errors in order of severity (JSON syntax → structure → configuration)
-- Compare with working examples from vibe-coding-snaplogic/examples/
+- Compare with working examples from /home/jocel/llmapps/vibe-coding-snaplogic-new/examples/
 - Test each fix incrementally with validation tools
 - Document unusual fixes and add to knowledge base
 
