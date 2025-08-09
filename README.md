@@ -101,38 +101,71 @@ This system includes two specialized Claude Code agents that automatically handl
 
 ## 🔌 MCP Tools Integration
 
-The system includes a production-ready MCP server that provides real-time access to SnapLogic schemas and validation capabilities.
+The system includes **two production-ready MCP servers** that provide real-time access to SnapLogic schemas, validation capabilities, and **automated CI/CD deployment**:
 
-### Setup Instructions
-1. **Install MCP server dependencies**:
-   ```bash
-   cd mcp-tools/mcp-snaplogic-schema/
-   npm install
-   ```
+### Available MCP Tools
 
-2. **Configure environment variables** (see Environment Setup section below)
+#### **SnapLogic Schema MCP (`mcp-snaplogic-schema`)**
+Real-time access to SnapLogic snap schemas and validation capabilities.
 
-3. **Add to Claude Code MCP configuration** (`~/.claude/claude_desktop_config.json`):
-   ```json
-   {
-     "mcpServers": {
-       "snaplogic-schema": {
-         "command": "node",
-         "args": ["./vibe-coding-snaplogic/mcp-tools/mcp-snaplogic-schema/index.js"]
-       },
-       "snaplogic-git": {
-         "command": "node", 
-         "args": ["./vibe-coding-snaplogic/mcp-tools/mcp-snaplogic-git/index.js"]
-       }
-     }
-   }
-   ```
+#### **SnapLogic CI/CD MCP (`mcp-snaplogic-git`)** ⭐ **NEW** 
+Automated development-to-production deployment with GitHub integration.
+
+### CI/CD MCP Tools
 
 #### `mcp__snaplogic-git__git_status`
 Check synchronization status between GitHub and SnapLogic, showing which pipelines are out of sync.
+- **Usage**: Monitor deployment status and identify pipelines needing sync
+- **Output**: Detailed sync status with SHA comparisons and out-of-sync assets
 
 #### `mcp__snaplogic-git__git_pull`
-Pull latest changes from GitHub to SnapLogic, enabling automated CI/CD deployment.
+Pull latest changes from GitHub to SnapLogic, enabling **automated CI/CD deployment**.
+- **Usage**: Deploy committed pipeline changes directly to SnapLogic production
+- **Benefits**: Complete CI/CD automation - commit to GitHub, deploy to SnapLogic instantly
+- **Integration**: Automatically used by `snaplogic-pipeline-developer` agent for seamless deployment
+
+### Setup Instructions
+
+#### **1. Install MCP Server Dependencies**
+```bash
+# Install schema MCP dependencies
+cd mcp-tools/mcp-snaplogic-schema/
+npm install
+
+# Install CI/CD MCP dependencies  
+cd ../mcp-snaplogic-git/
+npm install
+cd ../..
+```
+
+#### **2. Configure Environment Variables**
+```bash
+# Quick setup using provided script
+./setup-environment.sh
+
+# Or manually configure (see Environment Setup section below)
+```
+
+#### **3. Add to Claude Code MCP Configuration**
+Edit `~/.claude/claude_desktop_config.json` or use the MCP configuration in your project directory:
+
+```json
+{
+  "mcpServers": {
+    "snaplogic-schema": {
+      "command": "node",
+      "args": ["/path/to/vibe-coding-snaplogic/mcp-tools/mcp-snaplogic-schema/index.js"]
+    },
+    "snaplogic-git": {
+      "command": "node", 
+      "args": ["/path/to/vibe-coding-snaplogic/mcp-tools/mcp-snaplogic-git/index.js"]
+    }
+  }
+}
+```
+
+#### **4. Restart Claude Code**
+Environment variables and MCP server configurations are loaded at startup.
 
 ### Available MCP Tools
 
@@ -171,9 +204,27 @@ mcp__snaplogic-schema__validate_snap_config({
 
 ## 🌍 Environment Setup
 
-### Required Environment Variables
+### **Quick Setup (Recommended)**
 
-The system uses environment variables for secure, portable configuration. Set these in your shell profile (`~/.bashrc`, `~/.zshrc`, etc.):
+Use the provided setup script for automatic configuration:
+
+```bash
+# Automatic setup - detects your shell and configures everything
+./setup-environment.sh
+```
+
+This script:
+- ✅ **Auto-detects your shell** (bash/zsh/other)
+- ✅ **Adds all required environment variables** to your profile
+- ✅ **Provides verification commands** to confirm setup
+- ✅ **Includes helpful next steps** and customization guidance
+- ✅ **Prevents duplicate configuration** if already setup
+
+### **Manual Setup (Advanced)**
+
+If you prefer manual configuration or need custom values:
+
+#### Required Environment Variables
 
 ```bash
 # Authentication (Required)
@@ -194,37 +245,33 @@ export SNAPLOGIC_PROJECT_ID="your_project_id"
 export SNAPLOGIC_PROJECT_PATH="snapLogic4snapLogic/${SNAPLOGIC_PROJECT_SPACE}"
 ```
 
-### Setup Instructions
+#### Manual Setup Steps
 
-#### 1. **Add to Shell Profile**
-```bash
-# Add environment variables to your shell profile
-echo "# SnapLogic Configuration" >> ~/.bashrc
-echo "export SNAPLOGIC_USERNAME=\"your_username@domain.com\"" >> ~/.bashrc  
-echo "export SNAPLOGIC_PASSWORD=\"your_password\"" >> ~/.bashrc
-echo "export SNAPLOGIC_SCHEMA_BASE_URL=\"https://emea.snaplogic.com\"" >> ~/.bashrc
-echo "export SNAPLOGIC_SCHEMA_ORG=\"YourOrgName\"" >> ~/.bashrc
-echo "export SNAPLOGIC_PROJECT_BASE_URL=\"https://emea.snaplogic.com\"" >> ~/.bashrc
-echo "export SNAPLOGIC_PROJECT_ORG=\"YourOrgName\"" >> ~/.bashrc
-echo "export SNAPLOGIC_PROJECT_SPACE=\"your_project_space\"" >> ~/.bashrc
-echo "export SNAPLOGIC_PROJECT_ID=\"your_project_id\"" >> ~/.bashrc
-echo "export SNAPLOGIC_PROJECT_PATH=\"snapLogic4snapLogic/\${SNAPLOGIC_PROJECT_SPACE}\"" >> ~/.bashrc
-```
+1. **Add to Shell Profile**
+   ```bash
+   # Determine your shell profile
+   echo $SHELL  # Check if bash or zsh
+   
+   # Add variables to appropriate profile
+   # For bash: ~/.bashrc
+   # For zsh: ~/.zshrc
+   # For other: ~/.profile
+   ```
 
-#### 2. **Reload Environment**
-```bash
-source ~/.bashrc  # or restart your terminal
-```
+2. **Reload Environment**
+   ```bash
+   source ~/.bashrc  # or ~/.zshrc, or restart terminal
+   ```
 
-#### 3. **Restart Claude Code**
-Environment variables are loaded when Claude Code starts, so restart it after setting variables.
+3. **Restart Claude Code**
+   Environment variables are loaded when Claude Code starts.
 
-#### 4. **Verify Configuration**
-```bash
-echo "Username: $SNAPLOGIC_USERNAME"
-echo "Schema URL: $SNAPLOGIC_SCHEMA_BASE_URL" 
-echo "Project Space: $SNAPLOGIC_PROJECT_SPACE"
-```
+4. **Verify Configuration**
+   ```bash
+   echo "Username: $SNAPLOGIC_USERNAME"
+   echo "Schema URL: $SNAPLOGIC_SCHEMA_BASE_URL" 
+   echo "Project Space: $SNAPLOGIC_PROJECT_SPACE"
+   ```
 
 ### Finding Your SnapLogic Configuration
 
@@ -385,13 +432,10 @@ cp custom-agents/* ~/.claude/agents/
 
 ### 3. Setup Environment Variables
 ```bash
-# Add your SnapLogic credentials to shell profile
-echo "export SNAPLOGIC_USERNAME=\"your_username@domain.com\"" >> ~/.bashrc
-echo "export SNAPLOGIC_PASSWORD=\"your_password\"" >> ~/.bashrc  
-echo "export SNAPLOGIC_SCHEMA_BASE_URL=\"https://emea.snaplogic.com\"" >> ~/.bashrc
-echo "export SNAPLOGIC_SCHEMA_ORG=\"YourOrgName\"" >> ~/.bashrc
-echo "export SNAPLOGIC_PROJECT_SPACE=\"your_project_space\"" >> ~/.bashrc
-source ~/.bashrc
+# Quick automated setup (recommended)
+./setup-environment.sh
+
+# Restart Claude Code after setup to load new environment
 ```
 
 ### 4. Setup MCP Tools (Optional)
