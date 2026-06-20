@@ -37,7 +37,7 @@ cat >> "$PROFILE" << 'EOF'
 # SnapLogic MCP Tools Configuration
 # These environment variables are required for Claude Code's SnapLogic MCP tools to function
 export SNAPLOGIC_USERNAME="jarcega@snaplogic.com"
-export SNAPLOGIC_PASSWORD="---"
+export SNAPLOGIC_PASSWORD="changeme"
 export SNAPLOGIC_SCHEMA_BASE_URL="https://emea.snaplogic.com"
 export SNAPLOGIC_SCHEMA_ORG="ConnectFasterInc"
 export SNAPLOGIC_PROJECT_BASE_URL="https://emea.snaplogic.com"
